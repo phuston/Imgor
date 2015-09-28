@@ -34,3 +34,14 @@ build/
 
 #NDK
 obj/
+
+
+/local.properties
+/.idea/*
+.DS_Store
+/build/*
+gradle/*
+/captures
+.gradle
+*.iml
+
