@@ -1,36 +1,37 @@
 package com.android.phuston.imgor.fragments;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.android.phuston.imgor.R;
 import com.android.phuston.imgor.adapters.GridViewAdapter;
-import com.android.phuston.imgor.api.APIClient;
-import com.android.phuston.imgor.models.ImageQuery;
 import com.android.phuston.imgor.models.Item;
 
 import java.util.ArrayList;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 
 public class SearchFragment extends Fragment {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
+    OnImageSearchListener mListener;
+
     private final String title = "Search Imgor";
-    private final String API_KEY = "AIzaSyDfO49CeKzTrhVTroM7bgkzni5_RTcRM7U";
-    private final String CX = "016517584568088842047:uukas3fd3j4";
+    private final String API_KEY = "AIzaSyB4JJeo-t-bpQCHQw1BCJlMkdxQw_jspaU";
+    private final String CX = "016517584568088842047:wzc2owtisfu";
     private final String SEARCHTYPE = "image";
 
+    private ImageButton mSearchButton;
+    private EditText mSearchEditText;
     private GridView mGridView;
     private GridViewAdapter mGridviewAdapter;
 
@@ -39,6 +40,16 @@ public class SearchFragment extends Fragment {
 
     public SearchFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnImageSearchListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnImageSearchListener");
+        }
     }
 
     @Override
@@ -64,32 +75,32 @@ public class SearchFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Item image = mGridviewAdapter.getItem(position);
                 String urltosave = image.getLink();
-                //TODO: Do something with the URL - AKA save it to a database woop woop
+                Toast.makeText(getActivity(), urltosave, Toast.LENGTH_SHORT).show();
             }
         });
+
+        mSearchButton = (ImageButton) rootView.findViewById(R.id.searchButton);
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = mSearchEditText.getText().toString();
+                if (query != null) {
+                    mListener.onImageSearch(query);
+                }
+            }
+        });
+
+        mSearchEditText = (EditText) rootView.findViewById(R.id.searchEditText);
+
         return rootView;
     }
 
-    public void updateImageList(String query){
-        APIClient.getImageSearchClient().getImages(API_KEY, CX, SEARCHTYPE, query, new Callback<ImageQuery>() {
-            @Override
-            public void success(ImageQuery imageQuery, Response response) {
-                mImages = (ArrayList<Item>) imageQuery.getItems();
-                mGridviewAdapter.setGridData(mImages);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e(TAG, "Encountered an error in Retrofit");
-                Log.e(TAG, error.getUrl());
-                Log.e(TAG, error.getMessage());
-            }
-        });
+    public GridViewAdapter getGridViewAdapter() {
+        return mGridviewAdapter;
     }
 
-    @Override
-    public void onResume () {
-        super.onStart();
-        updateImageList("Patrick");
+    // Interface to keep track of data updates
+    public interface OnImageSearchListener {
+        void onImageSearch(String query);
     }
 }

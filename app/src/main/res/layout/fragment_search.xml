@@ -3,24 +3,53 @@
     android:layout_height="match_parent"
     android:background="#f0f0f0">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="HELLO HELLO HELLO HELO"/>-->
+    <LinearLayout
+        android:id="@+id/searchLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:background="@color/material_blue_grey_800"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/searchEditText"
+            android:singleLine="true"
+            android:paddingTop="16dp"
+            android:hint="Search"
+            android:layout_weight="1.00" />
+
+        <ImageButton
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search_white_18dp"
+            android:id="@+id/searchButton"
+
+            android:background="@color/material_blue_grey_900"
+            android:padding="8dp" />
+    </LinearLayout>
 
     <GridView
         android:id="@+id/imageGridView"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:background="@color/material_blue_grey_950"
-        android:layout_margin="0dp"
         android:drawSelectorOnTop="true"
         android:gravity="center"
         android:numColumns="2"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
         android:focusable="true"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:layout_below="@id/searchLayout"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp" />
 
 </RelativeLayout>

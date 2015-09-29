@@ -1,31 +1,43 @@
 package com.android.phuston.imgor.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.android.phuston.imgor.R;
+import com.android.phuston.imgor.adapters.GridViewAdapter;
+import com.android.phuston.imgor.api.APIClient;
 import com.android.phuston.imgor.fragments.SearchFragment;
+import com.android.phuston.imgor.models.ImageQuery;
+import com.android.phuston.imgor.models.Item;
 
-public class ImgorActivity extends AppCompatActivity {
-    FragmentPagerAdapter adapterViewPager;
+import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+public class ImgorActivity extends AppCompatActivity implements SearchFragment.OnImageSearchListener {
+
+    private static final String TAG = SearchFragment.class.getSimpleName();
+
+    private final String title = "Search Imgor";
+    private final String API_KEY = "AIzaSyB4JJeo-t-bpQCHQw1BCJlMkdxQw_jspaU";
+    private final String CX = "016517584568088842047:wzc2owtisfu";
+    private final String SEARCHTYPE = "image";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imgor);
-        ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
-        adapterViewPager = new PagerAdapter(getSupportFragmentManager());
 
-        vpPager.setAdapter(adapterViewPager);
-
-        vpPager.setCurrentItem(1);
-
+        if(savedInstanceState == null){
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new SearchFragment())
+                    .commit();
+        }
     }
 
     @Override
@@ -50,41 +62,22 @@ public class ImgorActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class PagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 2;
-
-        public PagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return new SearchFragment();
-                case 1:
-                    return new SearchFragment();
-                default:
-                    return null;
+    @Override
+    public void onImageSearch(String query) {
+        SearchFragment mSearchFragment = (SearchFragment) getFragmentManager().findFragmentById(R.id.container);
+        final GridViewAdapter adapter = mSearchFragment.getGridViewAdapter();
+        APIClient.getImageSearchClient().getImages(API_KEY, CX, SEARCHTYPE, query, new Callback<ImageQuery>() {
+            @Override
+            public void success(ImageQuery imageQuery, Response response) {
+                adapter.setGridData((ArrayList<Item>) imageQuery.getItems());
             }
-        }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Search Imgor";
-                case 1:
-                    return "Imgor Gallery";
-                default:
-                    return null;
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e(TAG, "Encountered an error in Retrofit");
+                Log.e(TAG, error.getUrl());
+                Log.e(TAG, error.getMessage());
             }
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_ITEMS;
-        }
-
+        });
     }
 }

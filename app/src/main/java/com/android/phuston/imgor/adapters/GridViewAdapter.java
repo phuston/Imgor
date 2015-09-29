@@ -2,6 +2,7 @@ package com.android.phuston.imgor.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +30,13 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
 
     /**
      * Updates grid data and refresh grid items.
-     * @param mGridData
      */
-    public void setGridData(ArrayList<Item> mGridData) {
-        this.mGridData = mGridData;
+    public void setGridData(ArrayList<Item> newData) {
+        mGridData = newData;
         notifyDataSetChanged();
+        for (Item i : mGridData) {
+            Log.i("ITEM: ", i.getLink());
+        }
     }
 
     @Override
@@ -48,6 +51,7 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.i("Getview ", " was called");
         ViewHolder holder;
 
         if(convertView == null) {
@@ -62,9 +66,10 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
 
         Item item = mGridData.get(position);
 
-        Picasso.with(mContext).load(item.getLink()).fit().centerCrop().into(holder.imageView);
-        return convertView;
+        Log.i("Item should be there ", item.getLink());
 
+        Picasso.with(mContext).load(item.getLink()).into(holder.imageView);
+        return convertView;
     }
 
     static class ViewHolder {
