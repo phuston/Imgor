@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="1"
-        android:background="@color/material_blue_grey_800"
+        android:background="@color/grey_400"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
@@ -19,7 +21,7 @@
             android:id="@+id/searchEditText"
             android:singleLine="true"
             android:paddingTop="16dp"
-            android:hint="Search"
+            android:hint="Search Imgor"
             android:layout_weight="1.00" />
 
         <ImageButton
@@ -28,8 +30,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_search_white_18dp"
             android:id="@+id/searchButton"
-
-            android:background="@color/material_blue_grey_900"
+            android:background="@color/grey_600"
             android:padding="8dp" />
     </LinearLayout>
 
@@ -37,7 +38,7 @@
         android:id="@+id/imageGridView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/material_blue_grey_950"
+        android:background="@color/grey_600"
         android:drawSelectorOnTop="true"
         android:gravity="center"
         android:numColumns="2"
