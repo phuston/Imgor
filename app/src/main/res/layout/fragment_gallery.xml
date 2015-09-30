@@ -12,13 +12,13 @@
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:background="@color/grey_600">
+        android:background="@color/grey_300">
 
         <GridView
             android:id="@+id/imageGridView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@color/grey_600"
+            android:background="@color/grey_300"
             android:drawSelectorOnTop="true"
             android:gravity="center"
             android:numColumns="2"
