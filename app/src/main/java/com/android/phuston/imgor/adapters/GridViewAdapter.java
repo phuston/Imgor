@@ -10,18 +10,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.android.phuston.imgor.R;
-import com.android.phuston.imgor.models.Item;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class GridViewAdapter extends ArrayAdapter<Item> {
+public class GridViewAdapter extends ArrayAdapter<String> {
 
     private Context mContext;
     private int layoutResourceId;
-    private ArrayList<Item> mGridData = new ArrayList<>();
+    private ArrayList<String> mGridData = new ArrayList<>();
 
-    public GridViewAdapter(Context mContext, int layoutResourceId, ArrayList<Item> mGridData) {
+    public GridViewAdapter(Context mContext, int layoutResourceId, ArrayList<String> mGridData) {
         super(mContext, layoutResourceId, mGridData);
         this.layoutResourceId = layoutResourceId;
         this.mContext = mContext;
@@ -31,11 +30,11 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
     /**
      * Updates grid data and refresh grid items.
      */
-    public void setGridData(ArrayList<Item> newData) {
+    public void setGridData(ArrayList<String> newData) {
         mGridData = newData;
         notifyDataSetChanged();
-        for (Item i : mGridData) {
-            Log.i("ITEM: ", i.getLink());
+        for (String url : mGridData) {
+            Log.i("ITEM: ", url);
         }
     }
 
@@ -45,13 +44,12 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
     }
 
     @Override
-    public Item getItem(int position) {
+    public String getItem(int position) {
         return mGridData.get(position);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.i("Getview ", " was called");
         ViewHolder holder;
 
         if(convertView == null) {
@@ -64,11 +62,9 @@ public class GridViewAdapter extends ArrayAdapter<Item> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Item item = mGridData.get(position);
+        String url = mGridData.get(position);
 
-        Log.i("Item should be there ", item.getLink());
-
-        Picasso.with(mContext).load(item.getLink()).into(holder.imageView);
+        Picasso.with(mContext).load(url).into(holder.imageView);
         return convertView;
     }
 

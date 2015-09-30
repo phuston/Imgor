@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import com.android.phuston.imgor.R;
 import com.android.phuston.imgor.adapters.GridViewAdapter;
 import com.android.phuston.imgor.api.APIClient;
+import com.android.phuston.imgor.data.ArrayHelper;
+import com.android.phuston.imgor.fragments.GalleryFragment;
 import com.android.phuston.imgor.fragments.SearchFragment;
 import com.android.phuston.imgor.models.ImageQuery;
 import com.android.phuston.imgor.models.Item;
@@ -19,7 +21,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ImgorActivity extends AppCompatActivity implements SearchFragment.OnImageSearchListener {
+public class ImgorActivity extends AppCompatActivity implements SearchFragment.OnImageSearchListener, SearchFragment.OnImageSaveListener {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -28,10 +30,14 @@ public class ImgorActivity extends AppCompatActivity implements SearchFragment.O
     private final String CX = "016517584568088842047:wzc2owtisfu";
     private final String SEARCHTYPE = "image";
 
+    private ArrayHelper mImageDbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imgor);
+
+        mImageDbHelper = new ArrayHelper(this);
 
         if(savedInstanceState == null){
             getFragmentManager().beginTransaction()
@@ -49,27 +55,32 @@ public class ImgorActivity extends AppCompatActivity implements SearchFragment.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_gallery) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new GalleryFragment())
+                    .addToBackStack(null)
+                    .commit();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onImageSearch(String query) {
+    public void onImageSearch(final String query) {
         SearchFragment mSearchFragment = (SearchFragment) getFragmentManager().findFragmentById(R.id.container);
         final GridViewAdapter adapter = mSearchFragment.getGridViewAdapter();
         APIClient.getImageSearchClient().getImages(API_KEY, CX, SEARCHTYPE, query, new Callback<ImageQuery>() {
             @Override
             public void success(ImageQuery imageQuery, Response response) {
-                adapter.setGridData((ArrayList<Item>) imageQuery.getItems());
+                Log.i(TAG, response.getUrl());
+                ArrayList<Item> queryResult = (ArrayList<Item>) imageQuery.getItems();
+                ArrayList<String> urls = new ArrayList<String>();
+
+                for (Item i : queryResult) {
+                    urls.add(i.getLink());
+                }
+                adapter.setGridData(urls);
             }
 
             @Override
@@ -79,5 +90,11 @@ public class ImgorActivity extends AppCompatActivity implements SearchFragment.O
                 Log.e(TAG, error.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onImageSave(String url) {
+        mImageDbHelper.saveImage(url);
+        Log.i(TAG, "Just saved " + url);
     }
 }

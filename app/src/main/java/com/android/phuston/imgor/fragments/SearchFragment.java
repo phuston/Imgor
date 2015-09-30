@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.android.phuston.imgor.R;
 import com.android.phuston.imgor.adapters.GridViewAdapter;
@@ -23,20 +22,11 @@ public class SearchFragment extends Fragment {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
-    OnImageSearchListener mListener;
+    OnImageSearchListener mSearchListener;
+    OnImageSaveListener mSaveListener;
 
-    private final String title = "Search Imgor";
-    private final String API_KEY = "AIzaSyB4JJeo-t-bpQCHQw1BCJlMkdxQw_jspaU";
-    private final String CX = "016517584568088842047:wzc2owtisfu";
-    private final String SEARCHTYPE = "image";
-
-    private ImageButton mSearchButton;
     private EditText mSearchEditText;
-    private GridView mGridView;
     private GridViewAdapter mGridviewAdapter;
-
-    private ArrayList<Item> mImages;
-
 
     public SearchFragment() {
         // Required empty public constructor
@@ -45,11 +35,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnImageSearchListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnImageSearchListener");
-        }
+        mSearchListener = (OnImageSearchListener) activity;
+        mSaveListener = (OnImageSaveListener) activity;
     }
 
     @Override
@@ -61,31 +48,32 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mImages = new ArrayList<>();
+        ArrayList<String> mImages = new ArrayList<>();
 
         mGridviewAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, mImages);
 
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
-        mGridView = (GridView) rootView.findViewById(R.id.imageGridView);
+        GridView mGridView = (GridView) rootView.findViewById(R.id.imageGridView);
+        mGridView.setEmptyView(rootView.findViewById(R.id.empty_grid_view));
         mGridView.setAdapter(mGridviewAdapter);
 
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Item image = mGridviewAdapter.getItem(position);
-                String urltosave = image.getLink();
-                Toast.makeText(getActivity(), urltosave, Toast.LENGTH_SHORT).show();
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String urltosave = mGridviewAdapter.getItem(position);
+                mSaveListener.onImageSave(urltosave);
+                return true;
             }
         });
 
-        mSearchButton = (ImageButton) rootView.findViewById(R.id.searchButton);
+        ImageButton mSearchButton = (ImageButton) rootView.findViewById(R.id.searchButton);
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String query = mSearchEditText.getText().toString();
                 if (query != null) {
-                    mListener.onImageSearch(query);
+                    mSearchListener.onImageSearch(query);
                 }
             }
         });
@@ -102,5 +90,9 @@ public class SearchFragment extends Fragment {
     // Interface to keep track of data updates
     public interface OnImageSearchListener {
         void onImageSearch(String query);
+    }
+
+    public interface OnImageSaveListener {
+        void onImageSave(String url);
     }
 }
