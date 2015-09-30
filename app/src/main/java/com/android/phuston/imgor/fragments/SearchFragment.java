@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,10 +16,8 @@ import android.widget.ImageButton;
 
 import com.android.phuston.imgor.R;
 import com.android.phuston.imgor.adapters.GridViewAdapter;
-import com.android.phuston.imgor.models.Item;
 
 import java.util.ArrayList;
-
 
 public class SearchFragment extends Fragment {
 
@@ -45,8 +46,28 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_gallery) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new GalleryFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        setHasOptionsMenu(true);
 
         ArrayList<String> mImages = new ArrayList<>();
 
@@ -92,6 +113,7 @@ public class SearchFragment extends Fragment {
         void onImageSearch(String query);
     }
 
+    // Interface to keep track of Image Save requests
     public interface OnImageSaveListener {
         void onImageSave(String url);
     }

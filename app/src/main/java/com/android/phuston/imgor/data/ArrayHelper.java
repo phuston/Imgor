@@ -57,4 +57,10 @@ public class ArrayHelper {
         return urls;
     }
 
+    public boolean deleteImage(String url) {
+        String whereClause = ImageContract.ImageEntry.COLUMN_NAME_IMAGE + "=?";
+        String[] whereArgs = new String[] { url };
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        return db.delete(ImageContract.ImageEntry.TABLE_NAME, whereClause, whereArgs) > 0;
+    }
 }

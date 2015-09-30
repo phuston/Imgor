@@ -71,5 +71,4 @@ public class GridViewAdapter extends ArrayAdapter<String> {
     static class ViewHolder {
         ImageView imageView;
     }
-
 }

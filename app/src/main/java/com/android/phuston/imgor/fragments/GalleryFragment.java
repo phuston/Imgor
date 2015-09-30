@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,6 +25,8 @@ public class GalleryFragment extends Fragment {
     private ArrayList<String> mSavedImages;
     private ArrayHelper mDbHelper;
 
+    private OnImageDeleteListener mDeleteListener;
+
     private GridViewAdapter mGridviewAdapter;
 
     public GalleryFragment() {
@@ -31,6 +36,7 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mDeleteListener = (OnImageDeleteListener) activity;
     }
 
     @Override
@@ -41,12 +47,32 @@ public class GalleryFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_gallery, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_search) {
+            getActivity().getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new SearchFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
+
         mGridviewAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, mSavedImages);
 
-        View rootView = inflater.inflate(R.layout.fragment_search, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
 
         GridView mGridView = (GridView) rootView.findViewById(R.id.imageGridView);
         mGridView.setEmptyView(rootView.findViewById(R.id.empty_grid_view));
@@ -55,6 +81,10 @@ public class GalleryFragment extends Fragment {
         mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String urltodelete = mGridviewAdapter.getItem(position);
+                mDeleteListener.onImageDelete(urltodelete);
+                mSavedImages.remove(position);
+                mGridviewAdapter.setGridData(mSavedImages);
                 return true;
             }
         });
@@ -64,5 +94,10 @@ public class GalleryFragment extends Fragment {
 
     public void loadSavedImages() {
         mSavedImages = mDbHelper.getSavedImages();
+    }
+
+    // Interface to keep track of data updates
+    public interface OnImageDeleteListener {
+        void onImageDelete(String url);
     }
 }

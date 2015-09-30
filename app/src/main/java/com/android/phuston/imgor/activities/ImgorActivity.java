@@ -3,8 +3,7 @@ package com.android.phuston.imgor.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.phuston.imgor.R;
 import com.android.phuston.imgor.adapters.GridViewAdapter;
@@ -21,7 +20,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ImgorActivity extends AppCompatActivity implements SearchFragment.OnImageSearchListener, SearchFragment.OnImageSaveListener {
+public class ImgorActivity extends AppCompatActivity implements SearchFragment.OnImageSearchListener, SearchFragment.OnImageSaveListener, GalleryFragment.OnImageDeleteListener {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -44,26 +43,6 @@ public class ImgorActivity extends AppCompatActivity implements SearchFragment.O
                     .add(R.id.container, new SearchFragment())
                     .commit();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_imgor, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_gallery) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, new GalleryFragment())
-                    .addToBackStack(null)
-                    .commit();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -95,6 +74,15 @@ public class ImgorActivity extends AppCompatActivity implements SearchFragment.O
     @Override
     public void onImageSave(String url) {
         mImageDbHelper.saveImage(url);
-        Log.i(TAG, "Just saved " + url);
+        Toast.makeText(this, "Image added to Imgor Gallery", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onImageDelete(String url) {
+        if (mImageDbHelper.deleteImage(url)) {
+            Toast.makeText(this, "Image was deleted successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Image deletion unsuccessful", Toast.LENGTH_SHORT).show();
+        }
     }
 }
